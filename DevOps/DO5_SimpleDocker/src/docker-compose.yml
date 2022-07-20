@@ -1,0 +1,16 @@
+services:
+  appserver:
+    container_name: appserver
+    build: ./server5
+    restart: always
+    links:
+     - proxyserver
+
+  proxyserver:
+    container_name: proxyserver
+    image: nginx
+    restart: always
+    ports:
+      - 80:8080
+    volumes:
+      - ./proxyserver/nginx/:/etc/nginx/

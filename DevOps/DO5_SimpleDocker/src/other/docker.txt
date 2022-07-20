@@ -1,0 +1,96 @@
+`sudo docker version`
+`sudo docker pull nginx`
+`sudo docker images`
+`sudo docker run -d f2f70adc5d89`
+`sudo docker ps`
+`sudo docker inspect 0e8f66cded26`
+
+`sudo docker stop f2f70adc5d89` `sudo docker stop heuristic_shtern`
+
+`sudo docker run -d -p 80:80 -p 443:443 f2f70adc5d89`
+
+`curl localhost:80`
+`sudo docker restart heuristic_shtern`
+
+_________________________________________
+
+docker exec -it ubu_container bash
+sudo docker exec -it d472532c93db  bash
+cat etc/nginx/nginx.conf
+
+_________________________________________
+sudo docker exec sleepy_tesla cat etc/nginx/nginx.conf
+
+http {
+
+    server {
+        listen 80;
+        listen [::]:80;
+        location = /status {
+            stub_status on;
+        }
+    }
+
+ ..... 
+
+    #include /etc/nginx/conf.d/*.conf;
+}
+_________________________________________
+
+sudo docker cp DO5_SimpleDocker-0/src/nginx.conf  sleepy_tesla:etc/nginx/nginx.conf
+
+sudo docker exec sleepy_tesla nginx -s reload
+
+sudo docker container export brave_dijkstra > container.tar
+sudo docker container export -o container.tar brave_dijkstra
+sudo docker stop brave_dijkstra
+sudo docker rmi -f cbffbae85d9c
+
+sudo docker import container.tar rdontos_img
+sudo docker run -itd rdontos_img bash
+
+
+
+__________3________________________________
+
+sudo docker pull nginx
+sudo docker images
+sudo docker run -d -p 81:81 12766a6745ee
+sudo docker ps
+sudo docker cp DO5_SimpleDocker-0/src/server/main.c eager_morse:home/main.c
+sudo docker cp DO5_SimpleDocker-0/src/server/nginx.conf eager_morse:etc/nginx/nginx.conf
+
+sudo docker exec -it eager_morse bash
+
+apt update    
+apt-get install libfcgi-dev
+apt-get install spawn-fcgi
+apt-get install gcc
+gcc main.c -lfcgi -o main
+spawn-fcgi -p 8080 ./main
+exit
+
+sudo docker exec eager_morse  nginx -s reload
+curl 127.0.0.1:81
+
+
+__________4_______________________________________________
+ 
+sudo docker build -t myserver:latest .` 
+sudo docker run -it -p 80:81 --name testserver -v /home/student/DO5_SimpleDocker-0/src/server/nginx/:/etc/nginx -d myserver:latest bash`  
+sudo docker restart testserver
+ 
+curl localhost:80/status
+curl localhost:80
+
+________
+
+sudo docker import container4.tar myserver:latest
+sudo docker images
+sudo docker run -it -p 80:81 --name testserver -v /home/student/DO5_SimpleDocker-0/src/server/nginx/:/etc/nginx -d myserver:latest bash
+
+sudo docker exec testserver  spawn-fcgi -p 8080 home/main
+sudo docker exec testserver  service nginx start
+
+sudo docker rm $(sudo docker ps -a -f status=exited -q)  
+sudo docker rmi $(sudo docker images -a -q)
