@@ -1,58 +1,61 @@
-.PHONY: all clean test s21_containersplus.a cpplint cppcheck leaks gcov_report rebuild
+.PHONY: all clean test cpplint cppcheck leaks gcov_report rebuild
 
-CC = g++
-FLAGS = -Wall -Wextra -Werror -std=c++17
+CC = g++ -std=c++17
+FLAGS = -Wall -Wextra -Werror
+GTEST_FLAGS = -lgtest
 GCOV_FLAG = -fprofile-arcs -ftest-coverage 
-LIB_NAME = s21_containersplus
+NAME = s21_containers
 TESTFILE=test
+LIB_NAME = s21_containersplus
 
 OS = $(shell uname)
-
 ifeq ($(OS), Linux)
 	LIBFLAGS=-lstdc++ `pkg-config --cflags --libs gtest`
 else
 	LIBFLAGS=-lstdc++ -lm -lgtest
 endif
 
+rebuild: clean all
 
-default: rebuild leaks
+check: leaks cpplint cppcheck gcov_report 
 
-all:  $(TESTFILE) 
-# check gcov_report
-
+all:  $(TESTFILE) check
 
 s21_containersplus.a:
 	$(CC) -c $(FLAGS) $(LIB_NAME).cpp -o $(LIB_NAME).o
 	ar rcs $(LIB_NAME).a $(LIB_NAME).o
 	# ranlib $@
 
-rebuild: clean all
-
 $(TESTFILE): s21_containersplus.a
 	$(CC) $(FLAGS) $(GCOV_FLAG) $(LIB_NAME).a tests.cpp -o $(TESTFILE) $(LIBFLAGS)
-# ./$(TESTFILE)
+	./$(TESTFILE)
 
-check: leaks gcov_report cpplint cppcheck
 
 gcov_report: $(TESTFILE)
 	lcov --no-external -t "$(TESTFILE)" -o $(TESTFILE).info -c -d ./
+# ./$(TESTFILE)
+# lcov  --no-external -t "$(TESTFILE)" -o $(TESTFILE).info -c -d ./
 	genhtml -o report $(TESTFILE).info
 	open report/index.html
+# gcov_report: test
+# 	lcov --no-external -t "tests" -o tests.info -c -d ./
+# 	genhtml -o report tests.info
+# 	open report/index.html
 
 cpplint:
 	@echo "****** linter start ******"
 	cp ../materials/linters/CPPLINT.cfg . 
-	python3 ../materials/linters/cpplint.py --extensions=cpp *.cpp *.tpp *.h 
+	python3 ../materials/linters/cpplint.py --extensions=cpp *.cpp *.h 
 	rm -f CPPLINT.cfg
 
 cppcheck:
 	@echo "****** cppcheck start ******"
-	cppcheck --enable=all --language=c++ --std=c++17 *.cpp  *.h
+	cppcheck --enable=all --suppress=unmatchedSuppression  --suppress=missingIncludeSystem --language=c++ --std=c++17 *.cpp *.h  *.tpp
+# cppcheck --enable=all  --suppress=unusedFunction --language=c++ --std=c++17 *.cpp *.tpp *.h
 #cppcheck --enable=all --suppress=constParameter --suppress=useStlAlgorithm --suppress=missingIncludeSystem --suppress=noCopyConstructor --suppress=noOperatorEq --suppress=noExplicitConstructor --suppress=negativeIndex --suppress=missingReturn *.cpp *.tpp *.h
-#  --suppress=missingIncludeSystem --suppress=unusedFunction 
 
 clean:
-	rm -f *.o *.a *.gcno *.gcda *.info $(TESTFILE) CPPLINT.cfg 
+	rm -f *.o *.a *.gcno *.gcda *.info a.out $(TESTFILE)
 	rm -rf report/
 
 leaks:

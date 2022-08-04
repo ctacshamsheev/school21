@@ -1,9 +1,11 @@
-#include "s21_set.h"
 #pragma once
+
+#include "s21_set.h"
+
 using namespace s21;
 
 // public:
-// конструкторы, деструкторы
+// ___________________ Member functions ____________________
 
 template <typename T>
 set<T>::set() : _head(nullptr) {}
@@ -12,7 +14,7 @@ template <typename T>
 set<T>::set(std::initializer_list<value_type> const &items) : _head(nullptr) {
   for (auto it = items.begin(); it != items.end(); it++) {
     insert(*it);
-    // std::cout << *this << std::endl;
+    balance_all();
   }
 }
 
@@ -24,7 +26,7 @@ set<T>::set(const set<value_type> &copy) : set() {
 template <typename T>
 set<T>::set(set<value_type> &&copy) {  // ? const
   _head = copy._head;
-  copy._head = nullptr;  // ? чтоб деструктор не удалил.
+  copy._head = nullptr;
 }
 
 template <typename T>
@@ -36,9 +38,9 @@ template <typename T>
 set<T> &set<T>::operator=(const set &m) {
   if (this != &m) {
     this->clear();
-  }
-  if (m._head != nullptr) {
-    this->copy_recurrentsiv(m._head);
+    if (m._head != nullptr) {
+      this->copy_recurrentsiv(m._head);
+    }
   }
   return *this;
 }
@@ -50,6 +52,8 @@ set<T> &set<T>::operator=(set &&m) {
   }
   return *this;
 }
+
+// ____________________ Lookup ___________________________
 
 template <typename T>
 typename set<T>::iterator set<T>::find(const key_type &key) {
@@ -67,6 +71,8 @@ typename set<T>::size_type set<T>::count(const key_type &key) {
   return count_recurrentsiv(key, _head);
 }
 
+// ___________________ Capacity __________________
+
 template <typename T>
 bool set<T>::empty() {
   return _head == nullptr;
@@ -82,6 +88,8 @@ typename set<T>::size_type set<T>::max_size() {
   return std::numeric_limits<size_t>::max() / sizeof(node);
 }
 
+// ___________________ Modifiers ___________________
+
 template <typename T>
 void set<T>::clear() {
   remove_recurrentsiv(_head);
@@ -90,7 +98,9 @@ void set<T>::clear() {
 
 template <typename T>
 std::pair<typename set<T>::SetIterator, bool> set<T>::insert(const T &data) {
-  SetIterator result = insert_recurrentsiv(Key(data), data, &_head, nullptr);
+  SetIterator result =
+      insert_recurrentsiv(key_type(data), data, &_head, nullptr);
+  // balance_all();
   return std::pair<set<T>::SetIterator, bool>(result, result.is_not_nullptr());
 }
 
@@ -105,12 +115,18 @@ void set<T>::swap(set &other) {
 
 template <typename T>
 void set<T>::merge(set &other) {
-  // TODO!!!!!!!!!!!!!
-
-  std::cout << other << std::endl;
+  auto iter = other.begin();
+  while (iter != other.end()) {
+    if (insert(*iter).second) {
+      auto tmp = iter;
+      ++iter;
+      other.erase(tmp);
+    } else
+      ++iter;
+  }
 }
 
-// итератор бегин энд
+// ____________________ Iterators _________________________
 
 template <typename T>
 typename set<T>::SetIterator set<T>::begin() {  // node or &T ?????  *?
@@ -123,16 +139,100 @@ typename set<T>::SetIterator set<T>::end() {  // *?
   return SetIterator();
 }
 
-// private:
+// класс итератор
+template <typename T>
+set<T>::SetIterator::SetIterator(node *p) : _current(p) {}
+
+template <typename T>
+typename set<T>::value_type set<T>::SetIterator::operator*() {
+  if (_current != nullptr) return _current->data;
+  throw std::out_of_range("Iterator::operator*(nullptr)");
+}
+
+template <typename T>
+typename set<T>::value_type *set<T>::SetIterator::operator->() {
+  if (_current != nullptr) return &(_current->data);
+  throw std::out_of_range("Iterator::operator*(nullptr)");
+};
+
+template <typename T>
+bool set<T>::SetIterator::operator!=(SetIterator const &other) const {
+  return _current != other._current;
+}
+
+template <typename T>
+bool set<T>::SetIterator::operator==(const SetIterator &other) const {
+  return _current == other._current;
+}
+
+template <typename T>
+bool set<T>::SetIterator::is_not_nullptr() const {
+  return this->_current != nullptr;
+}
+
+template <typename T>
+typename set<T>::SetIterator &set<T>::SetIterator::operator++() {
+  if (_current != nullptr) {
+    if (_current->right != nullptr) {
+      _current = (_current->right);
+      while (_current->left != nullptr) {
+        _current = _current->left;
+      }
+    } else {
+      while (_current->parent != nullptr &&
+             _current->data >= _current->parent->data) {
+        _current = (_current->parent);
+      }
+      _current = (_current->parent);
+    }
+  }
+  return *this;
+}
+
+template <typename T>
+set<T>::SetConstIterator::SetConstIterator() : SetIterator() {}
+
+template <typename T>
+const typename set<T>::value_type set<T>::SetConstIterator::operator*() {
+  return SetIterator::operator*();
+}
+
+template <typename T>
+const typename set<T>::value_type *set<T>::SetConstIterator::operator->() {
+  return SetIterator::operator->();
+};
+
+template <typename T>
+const typename set<T>::SetConstIterator &
+set<T>::SetConstIterator::operator++() {
+  return SetIterator::operator++();
+};
+
+//  ____________________ Bonus Task ____________________
+
+template <typename T>
+template <typename... Args>
+std::pair<typename set<T>::SetIterator, bool> set<T>::emplace(Args &&...args) {
+  std::initializer_list<value_type> items{args...};
+  std::pair<iterator, bool> result = insert(*(items.begin()));
+  balance_all();
+  return result;
+}
+
+// _______________________ protected func ___________________________
+
+template <typename T>
+typename set<T>::key_type set<T>::get_key(value_type data) {
+  return data;
+};
 
 template <typename T>
 bool set<T>::is_not_eq(value_type a, value_type b) {
-  // return true;  // for multiset
   return a != b;
 }
 
 template <typename T>
-typename set<T>::SetIterator set<T>::insert_recurrentsiv(Key key,
+typename set<T>::SetIterator set<T>::insert_recurrentsiv(key_type key,
                                                          const value_type &data,
                                                          node **ptr,
                                                          node *parent) {
@@ -141,21 +241,10 @@ typename set<T>::SetIterator set<T>::insert_recurrentsiv(Key key,
     (*ptr)->data = data;
     (*ptr)->left = (*ptr)->right = nullptr;
     (*ptr)->parent = parent;
-
-    balance_recurrentsiv(&_head);
-    set_parent(&_head, nullptr);
     return SetIterator(*ptr);
-
-    // std::cout << first.is_more(second);
-    //  } else if (first.is_more(second)) {
-    //    if (first.is_more(second)) {
-
   } else {
-    // Key first((*ptr)->data);
-    // Key second(data);
-
     if (is_not_eq(data, (*ptr)->data)) {
-      if (key.is_less((*ptr)->data)) {
+      if (data < (*ptr)->data) {
         return insert_recurrentsiv(key, data, &((*ptr)->left), (*ptr));
       } else {
         return insert_recurrentsiv(key, data, &((*ptr)->right), (*ptr));
@@ -169,9 +258,55 @@ template <typename T>
 typename set<T>::SetIterator set<T>::find_recurrentsiv(const key_type &key,
                                                        node *ptr) {
   if (ptr == nullptr) return SetIterator();
-  if (ptr->data == key) return SetIterator(ptr);
-  if (ptr->data > key) return find_recurrentsiv(key, ptr->left);
+  if (get_key(ptr->data) == key) return SetIterator(ptr);
+  if (get_key(ptr->data) > key) return find_recurrentsiv(key, ptr->left);
   return find_recurrentsiv(key, ptr->right);
+}
+
+template <typename T>
+typename set<T>::SetIterator set<T>::find_upper(const key_type &key,
+                                                node *ptr) {
+  while (ptr != nullptr) {
+    if ((get_key(ptr->data) > key)) {
+      if (ptr->left != nullptr)
+        ptr = ptr->left;
+      else
+        break;
+    }
+    if ((get_key(ptr->data) <= key)) {
+      if (ptr->right != nullptr)
+        ptr = ptr->right;
+      else
+        break;
+    }
+  }
+  while (ptr != nullptr && get_key(ptr->data) <= key) {
+    ptr = ptr->parent;
+  }
+  return SetIterator(ptr);
+}
+
+template <typename T>
+typename set<T>::SetIterator set<T>::find_lower(const key_type &key,
+                                                node *ptr) {
+  while (ptr != nullptr) {
+    if ((get_key(ptr->data) >= key)) {
+      if (ptr->left != nullptr)
+        ptr = ptr->left;
+      else
+        break;
+    }
+    if ((get_key(ptr->data) < key)) {
+      if (ptr->right != nullptr)
+        ptr = ptr->right;
+      else
+        break;
+    }
+  }
+  while (ptr != nullptr && get_key(ptr->data) < key) {
+    ptr = ptr->parent;
+  }
+  return SetIterator(ptr);
 }
 
 template <typename T>
@@ -194,25 +329,28 @@ typename set<T>::node *set<T>::minimum(node *ptr) {
 
 template <typename T>
 typename set<T>::size_type set<T>::erase(const key_type &key) {
-  if (find(key).is_not_nullptr()) {
+  size_type count = 0;
+  while (contains(key)) {
     _head = erase_recurrentsiv(_head, key);
-    return 1;
+    count += 1;
   }
-  return 0;
+  return count;
 }
 
 template <typename T>
 void set<T>::erase(iterator pos) {
-  _head = erase_recurrentsiv(_head, *pos);
+  if (pos.is_not_nullptr()) {
+    _head = erase_recurrentsiv(_head, *pos);
+  }
 }
 
 template <typename T>
-typename set<T>::node *set<T>::erase_recurrentsiv(node *ptr, key_t key) {
+typename set<T>::node *set<T>::erase_recurrentsiv(node *ptr, key_type key) {
   node *tmp = nullptr;
   if (ptr == nullptr) return ptr;
-  if (key < ptr->data)
+  if (key < get_key(ptr->data))
     ptr->left = erase_recurrentsiv(ptr->left, key);
-  else if (key > ptr->data)
+  else if (key > get_key(ptr->data))
     ptr->right = erase_recurrentsiv(ptr->right, key);
   else if (ptr->left != nullptr and ptr->right != nullptr) {
     ptr->data = minimum(ptr->right)->data;
@@ -240,7 +378,8 @@ typename set<T>::size_type set<T>::count_recurrentsiv(const key_type &key,
                                                       const node *ptr) {
   if (ptr != nullptr) {
     return count_recurrentsiv(key, ptr->left) +
-           count_recurrentsiv(key, ptr->right) + ((ptr->data == key) ? 1 : 0);
+           count_recurrentsiv(key, ptr->right) +
+           ((get_key(ptr->data) == key) ? 1 : 0);
   } else
     return 0;
 }
@@ -261,6 +400,7 @@ void set<T>::remove_recurrentsiv(node *ptr) {
     delete (ptr);
   }
 }
+// _______________________ balance ___________________________
 
 template <typename T>
 int set<T>::height(node *ptr) const {
@@ -323,7 +463,13 @@ void set<T>::set_parent(node **ptr, node *parent) {
   }
 }
 
-// функции отвечающие за вывод print
+template <typename T>
+void set<T>::balance_all() {
+  balance_recurrentsiv(&_head);
+  set_parent(&_head, nullptr);
+}
+
+// _______________________ print ___________________________
 
 template <typename T>
 void set<T>::print_line(std::ostream &out) const {
@@ -333,26 +479,24 @@ void set<T>::print_line(std::ostream &out) const {
     flag = false;
     out << lvl << ": ";
     for (int i = 0; i < 10 - lvl; i++) out << "  ";
-    print_recurrentsiv(_head, 0, lvl, out, flag);
-    if (flag) out << std::endl;
+    print_recurrentsiv(_head, 0, lvl, out, &flag);
+    out << std::endl;
     lvl++;
   }
 }
 
 template <typename T>
 void set<T>::print_recurrentsiv(const node *ptr, int lvl_current, int lvl,
-                                std::ostream &out, bool &flag) const {
+                                std::ostream &out, bool *flag) const {
   if (lvl_current <= lvl) {
     if (ptr != nullptr) {
       if (lvl_current == lvl) {
-        flag = true;
-        // корень
-        // value_type t = ((ptr->parent != nullptr) ? ptr->parent->data : -1);
-        // out << ptr->data << "(" << t << ") ";
-
+        *flag = true;
+        //корень
+        value_type t = ((ptr->parent != nullptr) ? ptr->parent->data : -1);
+        out << ptr->data << "(" << t << ") ";
         // элемент
-        out << ptr->data << " ";
-
+        //  out << ptr->data << " ";
         // баланс
         // int t = bfactor(ptr);
         // out << ptr->data << "(" << t << ") ";
@@ -374,45 +518,6 @@ void set<T>::print_sort(const node *ptr, std::ostream &out) const {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////
-// класс итератор
-
-template <typename T>
-set<T>::SetIterator::SetIterator(node *p) : _current(p) {}
-
-// typename set<T>::value_type &set<T>::SetIterator::operator*() {
-template <typename T>
-typename set<T>::value_type set<T>::SetIterator::operator*() {
-  if (_current != nullptr)
-    return _current->data;
-  else
-    return -1;  // TODO exception???
-}
-
-template <typename T>
-bool set<T>::SetIterator::operator!=(SetIterator const &other) const {
-  return _current != other._current;
-}
-
-template <typename T>
-typename set<T>::SetIterator &set<T>::SetIterator::operator++() {
-  if (_current != nullptr) {
-    if (_current->right != nullptr) {
-      _current = (_current->right);
-      while (_current->left != nullptr) {
-        _current = _current->left;
-      }
-    } else {
-      while (_current->parent != nullptr &&
-             _current->data >= _current->parent->data) {
-        _current = (_current->parent);
-      }
-      _current = (_current->parent);
-    }
-  }
-  return *this;
-}
-
 template <typename T>
 void set<T>::print(std::ostream &out) const {
   out << "set:[ ";
@@ -425,4 +530,4 @@ template <typename T>
 std::ostream &operator<<(std::ostream &out, const set<T> &set) {
   set.print(out);
   return out;
-};
+}
