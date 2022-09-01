@@ -54,6 +54,20 @@ TEST(s21_set, create_3_move) {
   test_eq<int>(b, std_b);
 }
 
+TEST(s21_set, operator_equal) {
+  set<int> a{12, 9, 4, 2, 1, 3, 11, 10, 5, 6, 18, 25, 16, 14, 17, 13};
+  std::set<int> std_a{12, 9, 4, 2, 1, 3, 11, 10, 5, 6, 18, 25, 16, 14, 17, 13};
+  EXPECT_EQ(a.size(), std_a.size());
+  set<int> b{1};
+  std::set<int> std_b{1};
+  b = a;
+  std_b = std_a;
+  EXPECT_EQ(b.size(), std_b.size());
+  EXPECT_EQ(a.size(), std_a.size());
+  test_eq<int>(a, std_a);
+  test_eq<int>(b, std_b);
+}
+
 TEST(s21_set, operator_eq) {
   set<int> a{12, 9, 4, 2, 1, 3, 11, 10, 5, 6, 18, 25, 16, 14, 17, 13};
   std::set<int> std_a{12, 9, 4, 2, 1, 3, 11, 10, 5, 6, 18, 25, 16, 14, 17, 13};

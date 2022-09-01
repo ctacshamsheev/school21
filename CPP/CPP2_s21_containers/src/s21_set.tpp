@@ -100,7 +100,6 @@ template <typename T>
 std::pair<typename set<T>::SetIterator, bool> set<T>::insert(const T &data) {
   SetIterator result =
       insert_recurrentsiv(key_type(data), data, &_head, nullptr);
-  // balance_all();
   return std::pair<set<T>::SetIterator, bool>(result, result.is_not_nullptr());
 }
 
@@ -471,63 +470,63 @@ void set<T>::balance_all() {
 
 // _______________________ print ___________________________
 
-template <typename T>
-void set<T>::print_line(std::ostream &out) const {
-  int lvl = 0;
-  bool flag = true;
-  while (lvl < 10 && flag) {
-    flag = false;
-    out << lvl << ": ";
-    for (int i = 0; i < 10 - lvl; i++) out << "  ";
-    print_recurrentsiv(_head, 0, lvl, out, &flag);
-    out << std::endl;
-    lvl++;
-  }
-}
+// template <typename T>
+// void set<T>::print_line(std::ostream &out) const {
+//   int lvl = 0;
+//   bool flag = true;
+//   while (lvl < 10 && flag) {
+//     flag = false;
+//     out << lvl << ": ";
+//     for (int i = 0; i < 10 - lvl; i++) out << "  ";
+//     print_recurrentsiv(_head, 0, lvl, out, &flag);
+//     out << std::endl;
+//     lvl++;
+//   }
+// }
 
-template <typename T>
-void set<T>::print_recurrentsiv(const node *ptr, int lvl_current, int lvl,
-                                std::ostream &out, bool *flag) const {
-  if (lvl_current <= lvl) {
-    if (ptr != nullptr) {
-      if (lvl_current == lvl) {
-        *flag = true;
-        //корень
-        value_type t = ((ptr->parent != nullptr) ? ptr->parent->data : -1);
-        out << ptr->data << "(" << t << ") ";
-        // элемент
-        //  out << ptr->data << " ";
-        // баланс
-        // int t = bfactor(ptr);
-        // out << ptr->data << "(" << t << ") ";
-      }
-      print_recurrentsiv(ptr->left, lvl_current + 1, lvl, out, flag);
-      print_recurrentsiv(ptr->right, lvl_current + 1, lvl, out, flag);
-    } else {
-      out << "    ";
-    }
-  }
-}
+// template <typename T>
+// void set<T>::print_recurrentsiv(const node *ptr, int lvl_current, int lvl,
+//                                 std::ostream &out, bool *flag) const {
+//   if (lvl_current <= lvl) {
+//     if (ptr != nullptr) {
+//       if (lvl_current == lvl) {
+//         *flag = true;
+//         //корень
+//         value_type t = ((ptr->parent != nullptr) ? ptr->parent->data : -1);
+//         out << ptr->data << "(" << t << ") ";
+//         // элемент
+//         //  out << ptr->data << " ";
+//         // баланс
+//         // int t = bfactor(ptr);
+//         // out << ptr->data << "(" << t << ") ";
+//       }
+//       print_recurrentsiv(ptr->left, lvl_current + 1, lvl, out, flag);
+//       print_recurrentsiv(ptr->right, lvl_current + 1, lvl, out, flag);
+//     } else {
+//       out << "    ";
+//     }
+//   }
+// }
 
-template <typename T>
-void set<T>::print_sort(const node *ptr, std::ostream &out) const {
-  if (ptr != nullptr) {
-    print_sort(ptr->left, out);
-    out << ptr->data << " ";
-    print_sort(ptr->right, out);
-  }
-}
+// template <typename T>
+// void set<T>::print_sort(const node *ptr, std::ostream &out) const {
+//   if (ptr != nullptr) {
+//     print_sort(ptr->left, out);
+//     out << ptr->data << " ";
+//     print_sort(ptr->right, out);
+//   }
+// }
 
-template <typename T>
-void set<T>::print(std::ostream &out) const {
-  out << "set:[ ";
-  print_sort(this->_head, out);
-  out << "]" << std::endl;
-  print_line(out);
-}
+// template <typename T>
+// void set<T>::print(std::ostream &out) const {
+//   out << "set:[ ";
+//   print_sort(this->_head, out);
+//   out << "]" << std::endl;
+//   print_line(out);
+// }
 
-template <typename T>
-std::ostream &operator<<(std::ostream &out, const set<T> &set) {
-  set.print(out);
-  return out;
-}
+// template <typename T>
+// std::ostream &operator<<(std::ostream &out, const set<T> &set) {
+//   set.print(out);
+//   return out;
+// }

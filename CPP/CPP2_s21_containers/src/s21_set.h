@@ -72,7 +72,6 @@ class set {
   bool contains(const key_type &key);
   // count element = key
   size_type count(const key_type &key);
-  // TODO(rdontos) is never used. [unusedFunction]
 
   // ____________________ Iterators _________________________
 
@@ -88,9 +87,7 @@ class set {
 
   // My type
 
-  class SetIterator
-      : public std::iterator<std::input_iterator_tag,  // iterator_category
-                             value_type> {
+  class SetIterator {
    private:
     node *_current;
 
@@ -147,13 +144,12 @@ class set {
   // _______________________ print ___________________________
   // template <T>
   // friend std::ostream &operator<<(std::ostream &out, const set<T> &set);
-  void print_line(std::ostream &out) const;
-  void print_recurrentsiv(const node *ptr, int lvl_current, int lvl,
-                          std::ostream &out, bool *flag) const;
-  void print_sort(const node *ptr, std::ostream &out) const;
-
- public:
-  void print(std::ostream &out) const;
+  //   void print_line(std::ostream &out) const;
+  //   void print_recurrentsiv(const node *ptr, int lvl_current, int lvl,
+  //                           std::ostream &out, bool *flag) const;
+  //   void print_sort(const node *ptr, std::ostream &out) const;
+  //  public:
+  //   void print(std::ostream &out) const;
 };
 
 }  // namespace s21

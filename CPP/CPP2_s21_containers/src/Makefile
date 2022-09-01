@@ -1,12 +1,12 @@
 .PHONY: all clean test cpplint cppcheck leaks gcov_report rebuild
 
-CC = g++ -std=c++17
-FLAGS = -Wall -Wextra -Werror
+CC = g++
+FLAGS = -Wall -Wextra -Werror -std=c++17
 GTEST_FLAGS = -lgtest
 GCOV_FLAG = -fprofile-arcs -ftest-coverage 
 NAME = s21_containers
 TESTFILE=test
-LIB_NAME = s21_containersplus
+LIB_NAME = s21_containers
 
 OS = $(shell uname)
 ifeq ($(OS), Linux)
@@ -19,28 +19,21 @@ rebuild: clean all
 
 check: leaks cpplint cppcheck gcov_report 
 
-all:  $(TESTFILE) check
+all: $(TESTFILE) check
 
-s21_containersplus.a:
-	$(CC) -c $(FLAGS) $(LIB_NAME).cpp -o $(LIB_NAME).o
-	ar rcs $(LIB_NAME).a $(LIB_NAME).o
-	# ranlib $@
+# s21_containersplus.a:
+# 	$(CC) -c $(FLAGS) $(LIB_NAME).cpp -o $(LIB_NAME).o
+# 	ar rcs $(LIB_NAME).a $(LIB_NAME).o
+# 	# ranlib $@
 
-$(TESTFILE): s21_containersplus.a
-	$(CC) $(FLAGS) $(GCOV_FLAG) $(LIB_NAME).a tests.cpp -o $(TESTFILE) $(LIBFLAGS)
+$(TESTFILE):
+	$(CC) $(LIB_NAME).cpp tests.cpp $(FLAGS) $(GCOV_FLAG) -o $(TESTFILE) $(LIBFLAGS)
 	./$(TESTFILE)
-
 
 gcov_report: $(TESTFILE)
 	lcov --no-external -t "$(TESTFILE)" -o $(TESTFILE).info -c -d ./
-# ./$(TESTFILE)
-# lcov  --no-external -t "$(TESTFILE)" -o $(TESTFILE).info -c -d ./
 	genhtml -o report $(TESTFILE).info
 	open report/index.html
-# gcov_report: test
-# 	lcov --no-external -t "tests" -o tests.info -c -d ./
-# 	genhtml -o report tests.info
-# 	open report/index.html
 
 cpplint:
 	@echo "****** linter start ******"
@@ -50,9 +43,7 @@ cpplint:
 
 cppcheck:
 	@echo "****** cppcheck start ******"
-	cppcheck --enable=all --suppress=unmatchedSuppression  --suppress=missingIncludeSystem --language=c++ --std=c++17 *.cpp *.h  *.tpp
-# cppcheck --enable=all  --suppress=unusedFunction --language=c++ --std=c++17 *.cpp *.tpp *.h
-#cppcheck --enable=all --suppress=constParameter --suppress=useStlAlgorithm --suppress=missingIncludeSystem --suppress=noCopyConstructor --suppress=noOperatorEq --suppress=noExplicitConstructor --suppress=negativeIndex --suppress=missingReturn *.cpp *.tpp *.h
+	cppcheck --enable=all --suppress=unmatchedSuppression  --suppress=missingIncludeSystem --language=c++ --std=c++17 *.cpp *.h	
 
 clean:
 	rm -f *.o *.a *.gcno *.gcda *.info a.out $(TESTFILE)
