@@ -1,0 +1,160 @@
+\input texinfo
+@setfilename manual
+@settitle s21_SmartCalc_v2.0
+@documentencoding UTF-8
+
+@copying
+Copyright © 2022 by rdontos
+@end copying
+
+@titlepage
+@title Short guide to using the calculator.
+@vskip 
+@insertcopying
+@author rdontos
+@end titlepage
+
+@ifnottex
+@node Top
+@top S21_SmartCalc_v2.0
+@insertcopying
+@end ifnottex
+
+@menu
+* Basic information:: This section provides common information on the principle of operation of calculator.
+* Arithmetic operations:: This section provides information about the list of implemented arithmetic operations
+* Math function:: This section provides information about the list of implemented mathematical functions.
+* Graphics:: This section provides information about the possibility of plotting functions.
+* Credit calculator:: This section provides information about the possibility of a credit calculator.
+* Deposit calculator:: This section provides information about the possibility of a deposit calculator.
+@end menu
+
+@node Basic information
+@chapter Basic information
+
+The calculator is developed in the C++ programming language using the QT Creator version 6.2.
+The main principle of calculations is implemented on the basis of Dijkstra's algorithm, the essence of which is to convert mathematical expressions from infix notation to reverse Polish notation.
+
+@node  Arithmetic operations
+@chapter  Arithmetic operations
+
+The following arithmetic operations are implemented in the calculator:
+@enumerate
+@item
+Addition - x + y
+@item
+Subtraction - x - y
+@item
+Multiplication - x * y
+@item
+Division - x / y
+@item
+Power - x ^ y
+@item
+Remainder of the division - x mod y
+@item
+Unary plus - +x
+@item
+Unary minus - -x
+@end enumerate
+Enter the expression, click "=" and get the answer.
+
+@node Math function
+@chapter Math function
+
+The following mathematical functions are implemented in the calculator:
+@enumerate
+@item
+Computes cosine - cos(x)
+@item
+Computes sine - sin(x)
+@item
+Computes tangent - tan(x)
+@item
+Computes arc cosine - acos(x)
+@item
+Computes arc sine - asin(x)
+@item
+Computes arc tangent - atan(x)
+@item
+Computes square root - sqrt(x)
+@item
+Computes natural logarithm - ln(x)
+@item
+Computes common logarithm - log(x)
+@end enumerate
+Enter the expression, click "=" and get the answer.
+
+@node Graphics
+@chapter Graphics
+
+The calculator implements the possibility of plotting functions.
+In order to build a graph, it is necessary that the constant "X" is present in the expression.
+The scope of definition and the scope of function values are limited to at least numbers from -1000000 to 1000000.
+The "Plot" checkbox must be checked in order to build a graph.
+Clicking on "=" will open a new window with a plotted graph.
+
+
+@node Credit calculator
+@chapter Credit calculator
+
+The calculator has a special mode of operation: Credit Calculator.
+
+The credit calculator window contains the following fields:
+@enumerate
+@item
+Loan amount - the desired loan amount. Supports only integer values.
+@item
+Loan term - set in months, supports only integer values.
+@item
+Interest rate - the desired interest rate. Set as an integer or a floating-point number.
+@item
+The type of monthly payments is radiobutton, the type of calculation of monthly payments.
+@end enumerate
+
+Output Fields: 
+@enumerate
+@item
+Monthly loan payment
+@item
+Overpayment on the loan (interest)
+@item
+The total amount to be paid.
+@end enumerate
+
+
+@node Deposit calculator
+@chapter Deposit calculator
+
+The calculator has a special mode of operation: Deposit calculator.
+
+The deposit calculator window contains the following fields:
+
+
+Output: accrued interest, tax amount, deposit amount by the end of the term
+@enumerate
+@item
+deposit amount - the desired вузщыше amount floating-point number.
+@item
+deposit term - set in months, supports only integer values.
+@item
+Interest rate - the desired interest rate. Set as an integer or a floating-point number.
+@item
+Deposit start date - set the date from which the deposit starts
+@item
+The type payments is radiobutton, the type of capitalization of interest or not.
+@item
+replenishments list, withdrawals list - enter amount and date.
+@end enumerate
+
+Output Fields: 
+@enumerate
+@item
+accrued interest
+@item
+tax amount
+@item
+deposit amount by the end of the term
+@end enumerate
+
+@bye
