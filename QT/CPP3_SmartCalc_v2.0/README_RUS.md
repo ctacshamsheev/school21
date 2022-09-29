@@ -24,11 +24,11 @@
 
 - Скриншот работы программы:
 
-![SmartCalc](../misc/img/2.png)
+![SmartCalc](misc/img/2.png)
 
 - Окно вывода графика:
 
-![SmartCalc](../misc/img/3.png)
+![SmartCalc](misc/img/3.png)
 
 ## Part 1. Реализация SmartCalc v2.0
 
@@ -95,7 +95,7 @@
  
 - Скриншот программы:
 
-![SmartCalc](../misc/img/4.png)
+![SmartCalc](misc/img/4.png)
 
 ## Part 3. Дополнительно. Депозитный калькулятор
 
@@ -105,8 +105,4 @@
 
 - Скриншот программы:
 
-![SmartCalc](../misc/img/6.png)
-
-- Скриншот добавления пополнений/снятий:
-
-![SmartCalc](../misc/img/5.png)
+![SmartCalc](misc/img/6.png)
